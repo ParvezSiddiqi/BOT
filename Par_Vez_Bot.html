@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Par_Vez Bot</title>
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css" />
+
+		<link rel="icon" href="https://www.google.com/favicon.ico">
+
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+	</head>
+
+	<body class="">
+		<div class="container">
+			<div class="d-flex justify-content-center align-items-center text-white p-2"> 
+				<button class="btn bg-warning border-dark">B</button>&nbsp;
+				<button class="btn bg-white border-dark ">O</button>&nbsp;
+				<button class="btn btn-success border-dark">T</button>&nbsp;
+			</div>
+			
+			<div class="input-group mb-3">
+				<input type="text" class="form-control" id="userInput" placeholder="Ask Anything ?" />
+					
+				<button onclick="sendMessage()" class="btn btn-outline-secondary" type="button"> <i class="bi bi-search"></i>
+				</button>
+			</div>
+
+			<hr>
+			
+			<div id="response"></div>
+
+			<div class="d-flex justify-content-center align-items-center fixed-bottom bg-dark text-white p-2">
+				
+				&copy;
+				2025 Web Dev Solutions&trade;
+				&nbsp;		
+
+				<a href="https://www.instagram.com/par_vez.social?utm_source=qr&igsh=ZjR4aGQyYWFrbXJw" class="text-decoration-none">
+					<i class="bi bi-instagram"></i>
+				</a>
+			</div>
+		</div>
+		<script>
+			async function sendMessage() {
+				const input = document.getElementById('userInput').value;
+				const responseDiv = document.getElementById('response');
+				if (!input) {
+					responseDiv.innerHTML = 'Ooops 😥, You hurt me 💔. <br>Please Ask Something .';
+					return;
+				}
+				responseDiv.innerHTML = 'Loading...';
+				try {
+					const response = await fetch(
+						'https://openrouter.ai/api/v1/chat/completions',
+						{
+							method: 'POST',
+							headers: {
+								Authorization: 'Bearer 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',
+								'HTTP-Referer': 'https://www.sitename.com',
+								'X-Title': 'SiteName',
+								'Content-Type': 'application/json',
+							},
+							body: JSON.stringify({
+								model: 'deepseek/deepseek-r1:free',
+								messages: [{ role: 'user', content: input }],
+							}),
+						},
+					);
+					const data = await response.json();
+					console.log(data);
+					const markdownText =
+						data.choices?.[0]?.message?.content || 'No response received.';
+					responseDiv.innerHTML = marked.parse(markdownText);
+				} catch (error) {
+					responseDiv.innerHTML = 'Error: ' + error.message;
+				}
+			}
+		</script>
+	</body>
+</html>
